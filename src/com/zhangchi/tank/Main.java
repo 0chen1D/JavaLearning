@@ -2,7 +2,7 @@ package com.zhangchi.tank;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 /*		Frame f =new Frame();
 		//设置窗口大小
 		f.setSize(800,600);
@@ -24,6 +24,11 @@ public class Main {
 		
 	}*/
 		TankFrame tf = new TankFrame();
+		//不断重画
+		while(true){
+			Thread.sleep(50);
+			tf.repaint();
+		}
 		
 	}	
 }
