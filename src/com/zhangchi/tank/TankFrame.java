@@ -1,25 +1,31 @@
 package com.zhangchi.tank;
 
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class TankFrame extends Frame{
-	
-	int x = 200;
+	public static int gameWidth = 800;
+	public static int gameHeight = 600;
+/*	int x = 200;
 	int y = 200;
 	//初始化一个方向
 	Dir dir = Dir.DOWN;
 	//坦克速度
-	final static int speed = 5;
+	private final static int speed = 5;*/
 	
+	//得到一个坦克
+	Tank myTank = new Tank(200,200,Dir.DOWN);
+	Bullet bullet = new Bullet(200,200,Dir.DOWN);
 	
 	//构造方法 形成一个窗口
 	public TankFrame(){
-		this.setSize(800,600);
+		this.setSize(gameWidth,gameHeight);
 		//设置窗口可见
 		this.setVisible(true);
 		//设置是否可以拖动窗口大小
@@ -41,14 +47,31 @@ public class TankFrame extends Frame{
 		
 	}
 	
+	
+	//通过双缓冲解决闪烁问题
+	Image offScreenImage = null;
+	@Override
+	public void update(Graphics g) {
+		if (offScreenImage == null) {
+			offScreenImage = this.createImage(gameWidth, gameHeight);
+		}
+		Graphics gOffScreen = offScreenImage.getGraphics();
+		Color c = gOffScreen.getColor();
+		gOffScreen.setColor(Color.BLACK);
+		gOffScreen.fillRect(0, 0, gameWidth, gameHeight);
+		gOffScreen.setColor(c);
+		paint(gOffScreen);
+		g.drawImage(offScreenImage, 0, 0, null);
+	}
+	
 	//Graphics是系统的一直画笔 paint方法会被自动调用
 	@Override
 	public void paint(Graphics g){
 		//画一个矩形  左上角为 0 0   长和高分别为50 
-		g.fillRect(x, y, 50, 50);
+/*		g.fillRect(x, y, 50, 50);
 		System.out.println("重画一次");
-		/*x=x+50;
-		y=y+50;*/
+		x=x+50;
+		y=y+50;
 		switch (dir){
 		case LEFT:
 			x=x-speed;
@@ -65,8 +88,11 @@ public class TankFrame extends Frame{
 		default:
 			break;
 			
-		}
-		
+		}*/
+		//通过坦克类 让坦克自己把自己画出来
+		myTank.paint(g);
+		//子弹类自己画出子弹
+		bullet.paint(g);
 	}
 	
 	//定义一个内部类
@@ -106,7 +132,7 @@ public class TankFrame extends Frame{
 		//当一个按键被抬起来的时候触发
 		@Override
 		public void keyReleased(KeyEvent e){
-			System.out.println("健被抬起了");
+			System.out.println("键被抬起了");
 			int key = e.getKeyCode();
 			switch (key){
 			case KeyEvent.VK_LEFT:
@@ -129,22 +155,31 @@ public class TankFrame extends Frame{
 			
 		}
 		
-		//改变方向的方法
+		//改变方向的方法 + 控制移动
 		private void setMainTankDir() {
+			if(!bl && !br && !bu && !bd){
+				myTank.setMoving(false);
+			}else{
+				myTank.setMoving(true);
+			}
 			if(bl){
-				dir = Dir.LEFT;
+				//dir = Dir.LEFT;
+				myTank.setDir(Dir.LEFT);
 			}
 			
 			if(br){
-				dir = Dir.RIGHT;
+				//dir = Dir.RIGHT;
+				myTank.setDir(Dir.RIGHT);
 			}
 			
 			if(bu){
-				dir = Dir.UP;
+				//dir = Dir.UP;
+				myTank.setDir(Dir.UP);
 			}
 			
 			if(bd){
-				dir = Dir.DOWN;
+				//dir = Dir.DOWN;
+				myTank.setDir(Dir.DOWN);
 			}
 		}
 		
