@@ -8,10 +8,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TankFrame extends Frame{
-	public static int gameWidth = 800;
-	public static int gameHeight = 600;
+	public static int gameWidth = 1080;
+	public static int gameHeight = 960;
 /*	int x = 200;
 	int y = 200;
 	//初始化一个方向
@@ -20,8 +22,19 @@ public class TankFrame extends Frame{
 	private final static int speed = 5;*/
 	
 	//得到一个坦克
-	Tank myTank = new Tank(200,200,Dir.DOWN);
-	Bullet bullet = new Bullet(200,200,Dir.DOWN);
+	//将窗口对象（自己）传入到坦克的构造方面里面
+	Tank myTank = new Tank(200,400,Dir.DOWN,Group.GOOD,this);
+	
+	//Bullet bullet = new Bullet(200,200,Dir.DOWN);
+	//将子弹变更为可支持多颗
+	List<Bullet> bulletList = new ArrayList<Bullet>();
+	
+	//多个地方坦克
+	List<Tank> dTank = new ArrayList<Tank>();
+	
+	//定义一个爆炸
+	//Explode exp = new Explode(100,100,this);
+	List<Explode> expList = new ArrayList<Explode>();
 	
 	//构造方法 形成一个窗口
 	public TankFrame(){
@@ -89,10 +102,42 @@ public class TankFrame extends Frame{
 			break;
 			
 		}*/
+		//在屏幕上输出字体
+		g.setColor(Color.WHITE);
+		g.drawString("子弹的数量："+bulletList.size(), 10, 60);
+		g.drawString("敌人坦克的数量："+dTank.size(), 10, 80);
+		g.drawString("爆炸的数量："+expList.size(), 10, 100);
+		
 		//通过坦克类 让坦克自己把自己画出来
 		myTank.paint(g);
 		//子弹类自己画出子弹
-		bullet.paint(g);
+		//bullet.paint(g);
+		//将List中的子弹全部画出来  使用迭代器的循环方式 不允许除迭代器以外的方式删除
+		/*for(Bullet b : bulletList){
+			b.paint(g);
+		}*/
+		for (int i =0;i<bulletList.size();i++){
+			bulletList.get(i).paint(g);
+		}
+		
+		//画出所有地方坦克
+		for (int i = 0; i < dTank.size(); i++){
+			dTank.get(i).paint(g);
+		}
+		
+		//判断所有子弹和坦克是否相撞  用于击杀敌方坦克
+		for (int i = 0;i < bulletList.size(); i++){
+			for(int j =0 ;j < dTank.size(); j++){
+				bulletList.get(i).collideWith(dTank.get(j));
+			}
+			
+		}
+		
+		//画出爆炸
+		for(int i = 0 ;i < expList.size(); i++){
+			expList.get(i).paint(g);
+		}
+		
 	}
 	
 	//定义一个内部类
@@ -147,6 +192,9 @@ public class TankFrame extends Frame{
 			case KeyEvent.VK_DOWN:
 				bd = false;
 				break;
+			//处理ctrl键打出一颗子弹
+			case KeyEvent.VK_CONTROL:
+				myTank.fire();
 			default:
 				break;
 			}

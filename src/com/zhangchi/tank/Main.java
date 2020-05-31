@@ -24,6 +24,12 @@ public class Main {
 		
 	}*/
 		TankFrame tf = new TankFrame();
+		
+		//增加敌方坦克
+		for(int i = 0; i < 5; i++){
+			tf.dTank.add(new Tank(200+i*80,200,Dir.DOWN,Group.BAD,tf));
+		}
+		
 		//不断重画
 		while(true){
 			Thread.sleep(50);
